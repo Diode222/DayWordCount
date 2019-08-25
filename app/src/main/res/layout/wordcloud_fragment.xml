@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/word_cloud_fragment"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center" >
+
+    <!--增加选择下拉的按钮，切换展示样式（词云，tag云，柱状图）-->
+
+    <com.moxun.tagcloudlib.view.TagCloudView
+        android:id="@+id/tag_cloud"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:autoScrollMode="uniform"
+        app:lightColor="#ffff0000"
+        app:darkColor="#ff00ff00"
+        app:radiusPercent="0.5"
+        app:scrollSpeed="3"/>
+</LinearLayout>

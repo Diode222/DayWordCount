@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/word_cloud"
+        android:icon="@drawable/wordcloud_unselected"
+        android:title="词云" />
+    <item
+        android:id="@+id/word_sound"
+        android:icon="@drawable/sound"
+        android:title="词音" />
+    <item
+        android:id="@+id/word_dic"
+        android:icon="@drawable/word_dic"
+        android:title="词海" />
+</menu>
