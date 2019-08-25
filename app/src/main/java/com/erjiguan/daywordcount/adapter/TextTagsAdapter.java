@@ -31,7 +31,7 @@ public class TextTagsAdapter extends TagsAdapter {
     }
 
     @Override
-    public View getView(Context context, final int position, ViewGroup parent) {
+    public View getView(Context context, final int position, ViewGroup parent) {  //修改这里来将词语列表放到view中
         String[] name = {"android", "java", "c", "c++", "html5", "js", "css", "javase", "javaee"};
         Random rand = new Random();
         int randNum = rand.nextInt(9);
