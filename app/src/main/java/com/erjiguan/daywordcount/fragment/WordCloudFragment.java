@@ -20,27 +20,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WordCloudFragment extends Fragment {
-    private Spinner spinner;
-    private List<String> dataList;
-    private ArrayAdapter<String> spinnerAdapter;
+
+    private Spinner graphicsSpinner;
+    private List<String> graphicsList;
+    private ArrayAdapter<String> graphicsSpinnerAdapter;
+
+    private Spinner dataAmountSpinner;
+    private List<String> dataAmountList;
+    private ArrayAdapter<String> dataAmountSpinnerAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
 
-        spinner = (Spinner) view.findViewById(R.id.spinner);
-        dataList = new ArrayList<String>() {{
+        graphicsSpinner = (Spinner) view.findViewById(R.id.graphics_spinner);
+        graphicsList = new ArrayList<String>() {{
             add("3D词云");
             add("2D词云");
             add("柱状图");
         }};
 
-        spinnerAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item,dataList); //后面不行这里还要改一下，用fragment继承的方式来取context
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
+        graphicsSpinnerAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, graphicsList); //后面不行这里还要改一下，用fragment继承的方式来取context
+        graphicsSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        graphicsSpinner.setAdapter(graphicsSpinnerAdapter);
 
         // 给spinner设置监听
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        graphicsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // TODO
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // TODO
+            }
+        });
+
+        dataAmountSpinner = (Spinner) view.findViewById(R.id.data_amount_spinner);
+        dataAmountList = new ArrayList<String>() {{
+            add("密集");  //暂定
+            add("适量");
+            add("稀疏");
+        }};
+
+        dataAmountSpinnerAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, dataAmountList); //后面不行这里还要改一下，用fragment继承的方式来取context
+        dataAmountSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dataAmountSpinner.setAdapter(dataAmountSpinnerAdapter);
+
+        // 给spinner设置监听
+        dataAmountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 // TODO
