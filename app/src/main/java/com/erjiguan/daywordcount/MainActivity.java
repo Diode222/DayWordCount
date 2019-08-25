@@ -6,11 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.erjiguan.daywordcount.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.fragment.WordDicFragment;
 import com.erjiguan.daywordcount.fragment.WordSoundFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 

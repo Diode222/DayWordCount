@@ -8,11 +8,14 @@
     android:gravity="center" >
 
     <!--增加选择下拉的按钮，切换展示样式（词云，tag云，柱状图）-->
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <com.moxun.tagcloudlib.view.TagCloudView
         android:id="@+id/tag_cloud"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:autoScrollMode="uniform"
