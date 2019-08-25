@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title"
+    android:orientation="horizontal"
+    android:layout_height="?attr/actionBarSize"
+    android:layout_width="match_parent"
+    android:background="#03A9F4">
+
+    <!--因为定义了onClick为setting_menu，点了这个按钮会触发activity中的事件-->
+    <Button
+        android:id="@+id/title_setting_button"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/top_menu"
+        android:layout_gravity="center"
+        android:onClick="setting_menu" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/title_record_sound_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/record_sound"
+        android:layout_gravity="center"
+        android:onClick="record_sound" />
+</LinearLayout>

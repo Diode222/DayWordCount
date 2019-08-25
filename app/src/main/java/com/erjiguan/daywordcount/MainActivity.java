@@ -6,15 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.view.View;
+import android.widget.Button;
 
 import com.erjiguan.daywordcount.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.fragment.WordDicFragment;
 import com.erjiguan.daywordcount.fragment.WordSoundFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +44,23 @@ public class MainActivity extends AppCompatActivity {
         init();
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        Button settingButton = (Button) findViewById(R.id.title_setting_button);
+        Button recordSoundButton = (Button) findViewById(R.id.title_record_sound_button);
+
+        settingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO
+            }
+        });
+
+        recordSoundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO
+            }
+        });
     }
 
     private void init(){
