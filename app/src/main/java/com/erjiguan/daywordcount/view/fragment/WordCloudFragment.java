@@ -1,4 +1,4 @@
-package com.erjiguan.daywordcount.fragment;
+package com.erjiguan.daywordcount.view.fragment;
 
 import android.app.Fragment;
 import android.graphics.Color;
@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.erjiguan.daywordcount.R;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
+import com.erjiguan.wordcloudviewlib.WordCloudView;
 import com.moxun.tagcloudlib.view.TagCloudView;
 
 import java.util.ArrayList;
@@ -33,6 +34,26 @@ public class WordCloudFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
 
+        final TagCloudView tagCloudView = (TagCloudView) view.findViewById(R.id.tag_cloud_view);
+        tagCloudView.setBackgroundColor(Color.LTGRAY);
+        TextTagsAdapter tagsAdapter = new TextTagsAdapter(new String[20]);
+        tagCloudView.setAdapter(tagsAdapter);
+
+        final WordCloudView wordCloudView = (WordCloudView) view.findViewById(R.id.word_cloud_view);
+        // TODO 这里需要去改一下原来的WordCloudView，用一个更方便的方法来输入数据（二维List）
+        // "android", "java", "c", "c++", "html5", "js", "css", "javase", "javaee"
+        wordCloudView.addTextView("android", 50);
+        wordCloudView.addTextView("java", 45);
+        wordCloudView.addTextView("objective-c", 40);
+        wordCloudView.addTextView("c++", 35);
+        wordCloudView.addTextView("html5", 30);
+        wordCloudView.addTextView("js", 25);
+        wordCloudView.addTextView("css", 20);
+        wordCloudView.addTextView("javase", 15);
+        wordCloudView.addTextView("javaee", 10);
+
+        // TODO 还差一个柱状图
+
         graphicsSpinner = (Spinner) view.findViewById(R.id.graphics_spinner);
         graphicsList = new ArrayList<String>() {{
             add("3D词云");
@@ -48,7 +69,23 @@ public class WordCloudFragment extends Fragment {
         graphicsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                // TODO
+                switch (i) {
+                    case 0:  // 0表示3D词云
+                        tagCloudView.setVisibility(View.VISIBLE);
+                        wordCloudView.setVisibility(View.GONE);
+                        // TODO 还有一个柱状图
+
+                        break;
+                    case 1:  // 1表示2D词云
+                        tagCloudView.setVisibility(View.GONE);
+                        wordCloudView.setVisibility(View.VISIBLE);
+
+                        break;
+
+                    case 2:  // 2表示柱状图
+                        // TODO
+                        break;
+                }
             }
 
             @Override
@@ -80,12 +117,6 @@ public class WordCloudFragment extends Fragment {
                 // TODO
             }
         });
-
-        TagCloudView tagCloudView = (TagCloudView) view.findViewById(R.id.tag_cloud);
-        tagCloudView.setBackgroundColor(Color.LTGRAY);
-
-        TextTagsAdapter tagsAdapter = new TextTagsAdapter(new String[20]);
-        tagCloudView.setAdapter(tagsAdapter);
 
         return view;
     }

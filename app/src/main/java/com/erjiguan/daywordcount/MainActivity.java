@@ -9,9 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.erjiguan.daywordcount.fragment.WordCloudFragment;
-import com.erjiguan.daywordcount.fragment.WordDicFragment;
-import com.erjiguan.daywordcount.fragment.WordSoundFragment;
+import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
+import com.erjiguan.daywordcount.view.fragment.WordDicFragment;
+import com.erjiguan.daywordcount.view.fragment.WordSoundFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
                 // TODO
             }
         });
+
+
     }
 
     private void init(){

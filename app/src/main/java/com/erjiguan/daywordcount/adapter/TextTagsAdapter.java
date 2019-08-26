@@ -31,7 +31,7 @@ public class TextTagsAdapter extends TagsAdapter {
     }
 
     @Override
-    public View getView(Context context, final int position, ViewGroup parent) {  //修改这里来将词语列表放到view中
+    public View getView(Context context, final int position, ViewGroup parent) {  // TODO 修改这里来将词语列表放到view中
         String[] name = {"android", "java", "c", "c++", "html5", "js", "css", "javase", "javaee"};
         Random rand = new Random();
         int randNum = rand.nextInt(9);
@@ -43,7 +43,7 @@ public class TextTagsAdapter extends TagsAdapter {
         tv.setGravity(Gravity.CENTER);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {  // TODO click事件
                 Log.e("Click", "Tag " + position + " clicked.");
             }
         });
