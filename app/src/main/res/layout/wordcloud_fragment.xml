@@ -45,7 +45,7 @@
             app:lightColor="#ffff0000"
             app:darkColor="#ff00ff00"
             app:radiusPercent="0.5"
-            app:scrollSpeed="3"/>
+            app:scrollSpeed="3" />
 
         <!--2D词云-->
         <com.erjiguan.wordcloudviewlib.WordCloudView

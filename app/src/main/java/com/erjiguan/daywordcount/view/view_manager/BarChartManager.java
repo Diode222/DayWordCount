@@ -1,4 +1,4 @@
-package com.erjiguan.daywordcount.utils;
+package com.erjiguan.daywordcount.view.view_manager;
 
 import android.graphics.Color;
 
@@ -16,7 +16,6 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
