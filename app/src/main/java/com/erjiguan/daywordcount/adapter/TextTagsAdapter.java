@@ -33,6 +33,7 @@ public class TextTagsAdapter extends TagsAdapter {
     @Override
     public View getView(Context context, final int position, ViewGroup parent) {  // TODO 修改这里来将词语列表放到view中
         String[] name = {"android", "java", "c", "c++", "html5", "js", "css", "javase", "javaee"};
+
         Random rand = new Random();
         int randNum = rand.nextInt(9);
 
@@ -40,6 +41,7 @@ public class TextTagsAdapter extends TagsAdapter {
         ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(100, 100);
         tv.setLayoutParams(lp);
         tv.setText(name[randNum]);
+//        tv.setTextSize(randNum % 9 * 10);
         tv.setGravity(Gravity.CENTER);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override

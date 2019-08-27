@@ -59,7 +59,11 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!--还差一个柱状图-->
+        <!--词频柱状图-->
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bar_chart_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </FrameLayout>
 

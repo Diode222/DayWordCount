@@ -1,4 +1,4 @@
-package com.erjiguan.daywordcount.view;
+package com.erjiguan.daywordcount.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
