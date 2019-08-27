@@ -2,7 +2,6 @@ package com.erjiguan.daywordcount.adapter;
 
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -14,14 +13,18 @@ import com.moxun.tagcloudlib.view.TagsAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class TextTagsAdapter extends TagsAdapter {
 
     private List<String> dataSet = new ArrayList<>();
 
-    public TextTagsAdapter(@NonNull String... data) {
+    public TextTagsAdapter(ArrayList<ArrayList<Object> > dataList) {
         dataSet.clear();
+        int listLength = dataList.size();
+        String[] data = new String[listLength];
+        for (int i = 0; i < listLength; i++) {
+            data[i] = (String) dataList.get(i).get(0);
+        }
         Collections.addAll(dataSet, data);
     }
 
@@ -31,20 +34,17 @@ public class TextTagsAdapter extends TagsAdapter {
     }
 
     @Override
-    public View getView(Context context, final int position, ViewGroup parent) {  // TODO 修改这里来将词语列表放到view中
-        String[] name = {"android", "java", "c", "c++", "html5", "js", "css", "javase", "javaee"};
-        Random rand = new Random();
-        int randNum = rand.nextInt(9);
-
+    public View getView(Context context, final int position, ViewGroup parent) {
         TextView tv = new TextView(context);
         ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(100, 100);
         tv.setLayoutParams(lp);
-        tv.setText(name[randNum]);
+        tv.setText(dataSet.get(position));
+//        tv.setTextSize(randNum % 9 * 10);
         tv.setGravity(Gravity.CENTER);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  // TODO click事件
-                Log.e("Click", "Tag " + position + " clicked.");
+                Log.d("lvyang", dataSet.get(position) + " clicked " + "position: " + position);
             }
         });
         return tv;

@@ -14,7 +14,10 @@ import androidx.annotation.Nullable;
 
 import com.erjiguan.daywordcount.R;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
+import com.erjiguan.daywordcount.presenter.DataFormatter;
+import com.erjiguan.daywordcount.view.view_manager.BarChartManager;
 import com.erjiguan.wordcloudviewlib.WordCloudView;
+import com.github.mikephil.charting.charts.BarChart;
 import com.moxun.tagcloudlib.view.TagCloudView;
 
 import java.util.ArrayList;
@@ -30,29 +33,24 @@ public class WordCloudFragment extends Fragment {
     private List<String> dataAmountList;
     private ArrayAdapter<String> dataAmountSpinnerAdapter;
 
+    private TagCloudView tagCloudView;
+    private WordCloudView wordCloudView;
+    private BarChart barChartView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
 
-        final TagCloudView tagCloudView = (TagCloudView) view.findViewById(R.id.tag_cloud_view);
-        tagCloudView.setBackgroundColor(Color.LTGRAY);
-        TextTagsAdapter tagsAdapter = new TextTagsAdapter(new String[20]);
-        tagCloudView.setAdapter(tagsAdapter);
+        ArrayList<ArrayList<Object> > dataList = DataFormatter.getFormatedData();
 
-        final WordCloudView wordCloudView = (WordCloudView) view.findViewById(R.id.word_cloud_view);
-        // TODO 这里需要去改一下原来的WordCloudView，用一个更方便的方法来输入数据（二维List）
-        // "android", "java", "c", "c++", "html5", "js", "css", "javase", "javaee"
-        wordCloudView.addTextView("android", 50);
-        wordCloudView.addTextView("java", 45);
-        wordCloudView.addTextView("objective-c", 40);
-        wordCloudView.addTextView("c++", 35);
-        wordCloudView.addTextView("html5", 30);
-        wordCloudView.addTextView("js", 25);
-        wordCloudView.addTextView("css", 20);
-        wordCloudView.addTextView("javase", 15);
-        wordCloudView.addTextView("javaee", 10);
+        // 3D词云图
+        createTagCloudView(view, dataList);
 
-        // TODO 还差一个柱状图
+        // 2D词云图
+        createWordCloudView(view, dataList);
+
+        // 柱状图
+        createBarChartView(view, dataList);
 
         graphicsSpinner = (Spinner) view.findViewById(R.id.graphics_spinner);
         graphicsList = new ArrayList<String>() {{
@@ -73,17 +71,21 @@ public class WordCloudFragment extends Fragment {
                     case 0:  // 0表示3D词云
                         tagCloudView.setVisibility(View.VISIBLE);
                         wordCloudView.setVisibility(View.GONE);
-                        // TODO 还有一个柱状图
+                        barChartView.setVisibility(View.GONE);
 
                         break;
                     case 1:  // 1表示2D词云
                         tagCloudView.setVisibility(View.GONE);
                         wordCloudView.setVisibility(View.VISIBLE);
+                        barChartView.setVisibility(View.GONE);
 
                         break;
 
                     case 2:  // 2表示柱状图
-                        // TODO
+                        tagCloudView.setVisibility(View.GONE);
+                        wordCloudView.setVisibility(View.GONE);
+                        barChartView.setVisibility(View.VISIBLE);
+
                         break;
                 }
             }
@@ -119,5 +121,39 @@ public class WordCloudFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void createTagCloudView(View view, ArrayList<ArrayList<Object> > dataList) {
+        tagCloudView = (TagCloudView) view.findViewById(R.id.tag_cloud_view);
+        tagCloudView.setBackgroundColor(Color.LTGRAY);
+        TextTagsAdapter tagsAdapter = new TextTagsAdapter(dataList);
+        tagCloudView.setAdapter(tagsAdapter);
+    }
+
+    public void createWordCloudView(View view, ArrayList<ArrayList<Object> > dataList) {
+        wordCloudView = (WordCloudView) view.findViewById(R.id.word_cloud_view);
+        for (int i = 0; i < dataList.size(); i++) {
+            String word = (String) dataList.get(i).get(0);
+            int weight = (int) dataList.get(i).get(1);
+            wordCloudView.addTextView(word, weight);
+        }
+    }
+
+    public void createBarChartView(View view, ArrayList<ArrayList<Object> > dataList) {
+        barChartView = view.findViewById(R.id.bar_chart_view);
+        BarChartManager barChartManager = new BarChartManager(barChartView);
+
+        ArrayList<String> xVals = new ArrayList<>();
+        ArrayList<Integer> yVals = new ArrayList<>();
+
+        for (int i = 0; i < dataList.size(); i++) {
+            String word = (String) dataList.get(i).get(0);
+            int count = (int) dataList.get(i).get(1);
+
+            xVals.add(word);
+            yVals.add(count);
+        }
+
+        barChartManager.showBarChart(xVals, yVals, "词频统计", Color.BLUE);
     }
 }
