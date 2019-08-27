@@ -169,7 +169,8 @@ public class WordCloudFragment extends Fragment {
 
     public void createWordCloudView(View view, ArrayList<ArrayList<Object> > dataList) {
         wordCloudView = (WordCloudView) view.findViewById(R.id.word_cloud_view);
-        wordCloudView.CleanWordCloudView();  // TODO 还是有问题
+        wordCloudView.removeAllViews();
+        wordCloudView.CleanWordCloudView();
         for (int i = 0; i < dataList.size(); i++) {
             String word = (String) dataList.get(i).get(0);
             int weight = (int) dataList.get(i).get(1);
