@@ -30,7 +30,7 @@ dependencies {
 
     implementation 'com.moxun:tagcloudlib:1.2.0'
     implementation 'com.google.android.material:material:1.1.0-alpha09'
-    implementation 'com.github.Diode222:WordCloudViewLib:v0.11'
+    implementation 'com.github.Diode222:WordCloudViewLib:0.12'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
