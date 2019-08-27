@@ -1,6 +1,7 @@
 package com.erjiguan.daywordcount.view.fragment;
 
 import android.app.Fragment;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,6 +40,8 @@ public class WordCloudFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        this.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
 
         ArrayList<ArrayList<Object> > dataList = DataFormatter.getFormatedData();
