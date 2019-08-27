@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,13 +39,19 @@ public class WordCloudFragment extends Fragment {
     private WordCloudView wordCloudView;
     private BarChart barChartView;
 
+    final private int IN_TAG_CLOUD_VIEW = 0;
+    final private int IN_WORD_CLOUD_VIEW = 1;
+    final private int IN_BAR_CHART_VIEW = 2;
+
+    private int CURRENT_VIEW = IN_TAG_CLOUD_VIEW;
+
+    ArrayList<ArrayList<Object> > dataList = DataFormatter.getFormatedData(DataFormatter.INTENSIVE);
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         this.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
-
-        ArrayList<ArrayList<Object> > dataList = DataFormatter.getFormatedData();
+        final View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
 
         // 3D词云图
         createTagCloudView(view, dataList);
@@ -75,27 +82,30 @@ public class WordCloudFragment extends Fragment {
                         tagCloudView.setVisibility(View.VISIBLE);
                         wordCloudView.setVisibility(View.GONE);
                         barChartView.setVisibility(View.GONE);
-
+                        CURRENT_VIEW = IN_TAG_CLOUD_VIEW;
                         break;
                     case 1:  // 1表示2D词云
                         tagCloudView.setVisibility(View.GONE);
                         wordCloudView.setVisibility(View.VISIBLE);
                         barChartView.setVisibility(View.GONE);
-
+                        CURRENT_VIEW = IN_WORD_CLOUD_VIEW;
                         break;
-
                     case 2:  // 2表示柱状图
                         tagCloudView.setVisibility(View.GONE);
                         wordCloudView.setVisibility(View.GONE);
                         barChartView.setVisibility(View.VISIBLE);
-
+                        CURRENT_VIEW = IN_BAR_CHART_VIEW;
                         break;
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                // TODO
+//                // 默認3D詞雲
+//                tagCloudView.setVisibility(View.VISIBLE);
+//                wordCloudView.setVisibility(View.GONE);
+//                barChartView.setVisibility(View.GONE);
+//                CURRENT_VIEW = IN_TAG_CLOUD_VIEW;
             }
         });
 
@@ -113,13 +123,36 @@ public class WordCloudFragment extends Fragment {
         // 给spinner设置监听
         dataAmountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                // TODO
+            public void onItemSelected(AdapterView<?> adapterView, View arg1, int i, long l) {
+                switch (i) {
+                    case 0:  // 0表示密集
+                        dataList = DataFormatter.getFormatedData(DataFormatter.INTENSIVE);
+                        break;
+                    case 1:  // 1表示适量
+                        dataList = DataFormatter.getFormatedData(DataFormatter.MODERATE);
+                        break;
+                    case 2:  // 2表示稀疏
+                        dataList = DataFormatter.getFormatedData(DataFormatter.SPARSE);
+                        break;
+                }
+
+                createTagCloudView(view, dataList);
+                createWordCloudView(view, dataList);
+                createBarChartView(view, dataList);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                // TODO
+//                // 默认用密集显示
+//                dataList = DataFormatter.getFormatedData(DataFormatter.INTENSIVE);
+//
+//                View framentView = inflater.inflate(R.layout.wordcloud_fragment, container, false);
+//                tagCloudView.removeAllViews();
+//                createTagCloudView(framentView, dataList);
+//                wordCloudView.removeAllViews();
+//                createWordCloudView(framentView, dataList);
+//                barChartView.removeAllViews();
+//                createBarChartView(framentView, dataList);
             }
         });
 
@@ -131,15 +164,19 @@ public class WordCloudFragment extends Fragment {
         tagCloudView.setBackgroundColor(Color.LTGRAY);
         TextTagsAdapter tagsAdapter = new TextTagsAdapter(dataList);
         tagCloudView.setAdapter(tagsAdapter);
+        tagCloudView.invalidate();
     }
 
     public void createWordCloudView(View view, ArrayList<ArrayList<Object> > dataList) {
         wordCloudView = (WordCloudView) view.findViewById(R.id.word_cloud_view);
+        wordCloudView.removeAllViews();
+        wordCloudView.CleanWordCloudView();
         for (int i = 0; i < dataList.size(); i++) {
             String word = (String) dataList.get(i).get(0);
             int weight = (int) dataList.get(i).get(1);
             wordCloudView.addTextView(word, weight);
         }
+        wordCloudView.invalidate();
     }
 
     public void createBarChartView(View view, ArrayList<ArrayList<Object> > dataList) {
@@ -158,5 +195,6 @@ public class WordCloudFragment extends Fragment {
         }
 
         barChartManager.showBarChart(xVals, yVals, "词频统计", Color.BLUE);
+        barChartView.invalidate();
     }
 }
