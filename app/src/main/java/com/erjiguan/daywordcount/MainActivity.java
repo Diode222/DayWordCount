@@ -2,11 +2,17 @@ package com.erjiguan.daywordcount;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 
+import android.animation.ValueAnimator;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.widget.Button;
 
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
@@ -46,16 +52,10 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Button settingButton = (Button) findViewById(R.id.title_setting_button);
-        Button recordSoundButton = (Button) findViewById(R.id.title_record_sound_button);
+        View view = findViewById(R.id.popup_image_style);
+        recordSoundPopup(view);
 
         settingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO
-            }
-        });
-
-        recordSoundButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // TODO
@@ -99,5 +99,62 @@ public class MainActivity extends AppCompatActivity {
                 beginTransaction.commit();
                 break;
         }
+    }
+
+    private void recordSoundPopup(View view) {
+        final PopupMenu recordPopup = new PopupMenu(this, view);
+        recordPopup.getMenuInflater().inflate(R.menu.record_sound_menu, recordPopup.getMenu());
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        recordPopup.show();
+                        dimBackground(1.0f, 0.5f);
+                    }
+                });
+
+                recordPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.start_record:
+                                Log.d("lvyang", "start_record");
+                                break;
+                            case R.id.record_setting:
+                                Log.d("lvyang", "record_setting");
+                                break;
+                        }
+
+                        return true;
+                    }
+                });
+
+                recordPopup.setOnDismissListener(new PopupMenu.OnDismissListener() {
+                    @Override
+                    public void onDismiss(PopupMenu menu) {
+                        dimBackground(0.5f, 1.0f);
+                    }
+                });
+            }
+        });
+    }
+
+    private void dimBackground(final float fromDimValue, final float toDimValue) {
+        final Window window = getWindow();
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(fromDimValue, toDimValue);
+        valueAnimator.setDuration(200);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                WindowManager.LayoutParams params = window.getAttributes();
+                params.alpha = (Float) animation.getAnimatedValue();
+                window.setAttributes(params);
+            }
+        });
+
+        valueAnimator.start();
     }
 }
