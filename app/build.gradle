@@ -33,4 +33,5 @@ dependencies {
     implementation 'com.github.Diode222:WordCloudViewLib:0.12'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.github.Diode222:DiodeMenuPopup:v1.11'
 }

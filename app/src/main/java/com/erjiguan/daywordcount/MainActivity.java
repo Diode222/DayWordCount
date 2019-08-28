@@ -18,6 +18,7 @@ import android.widget.Button;
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.view.fragment.WordDicFragment;
 import com.erjiguan.daywordcount.view.fragment.WordSoundFragment;
+import com.erjiguan.diodemenupopup.DiodeMenuPopup;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -102,9 +103,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void recordSoundPopup(View view) {
-        final PopupMenu recordPopup = new PopupMenu(this, view);
+        final DiodeMenuPopup recordPopup = new DiodeMenuPopup(this, view);
         recordPopup.getMenuInflater().inflate(R.menu.record_sound_menu, recordPopup.getMenu());
 
+        final Window window = getWindow();
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         recordPopup.show();
-                        dimBackground(1.0f, 0.5f);
+                        recordPopup.dimBackground(1.0f, 0.5f, 200, window);
                     }
                 });
 
@@ -135,26 +137,10 @@ public class MainActivity extends AppCompatActivity {
                 recordPopup.setOnDismissListener(new PopupMenu.OnDismissListener() {
                     @Override
                     public void onDismiss(PopupMenu menu) {
-                        dimBackground(0.5f, 1.0f);
+                        recordPopup.dimBackground(0.5f, 1.0f, 200, window);
                     }
                 });
             }
         });
-    }
-
-    private void dimBackground(final float fromDimValue, final float toDimValue) {
-        final Window window = getWindow();
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(fromDimValue, toDimValue);
-        valueAnimator.setDuration(200);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                WindowManager.LayoutParams params = window.getAttributes();
-                params.alpha = (Float) animation.getAnimatedValue();
-                window.setAttributes(params);
-            }
-        });
-
-        valueAnimator.start();
     }
 }
