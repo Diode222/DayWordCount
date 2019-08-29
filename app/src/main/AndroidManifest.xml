@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.erjiguan.daywordcount">
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application xmlns:tools="http://schemas.android.com/tools"
@@ -12,10 +13,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:replace="android:theme">
+        <receiver
+            android:name=".broadcast.CloseRecordServiceBroadcast"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
         <service
             android:name=".service.RecordService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".MainActivity">
             <intent-filter>

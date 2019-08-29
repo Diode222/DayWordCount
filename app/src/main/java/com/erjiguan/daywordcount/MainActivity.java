@@ -4,16 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
-import android.animation.ValueAnimator;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import android.view.animation.Animation;
 import android.widget.Button;
 
 import com.erjiguan.daywordcount.service.RecordService;
@@ -125,12 +121,10 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.start_record:
-                                Log.d("lvyang", "start_record");
                                 Intent recordServiceIntent = new Intent(MainActivity.this, RecordService.class);
                                 startService(recordServiceIntent);
                                 break;
                             case R.id.record_setting:
-                                Log.d("lvyang", "record_setting");
                                 break;
                         }
 

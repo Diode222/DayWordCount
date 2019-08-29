@@ -11,11 +11,9 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import androidx.annotation.UiThread;
-import androidx.core.app.NotificationCompat;
-
 import com.erjiguan.daywordcount.MainActivity;
 import com.erjiguan.daywordcount.R;
+import com.erjiguan.daywordcount.broadcast.CloseRecordServiceBroadcast;
 
 public class RecordService extends Service {
 
@@ -38,9 +36,19 @@ public class RecordService extends Service {
         NotificationChannel channel = new NotificationChannel("record_sound", "录音", NotificationManager.IMPORTANCE_HIGH);
         notificationManager.createNotificationChannel(channel);
 
+        Intent closeRecordIntent = new Intent(this, CloseRecordServiceBroadcast.class);
+        PendingIntent closeRecordPendingIntent = PendingIntent.getBroadcast(getApplication(), 0, closeRecordIntent, 0);
+        remoteViews.setOnClickPendingIntent(R.id.cancel_button, closeRecordPendingIntent);
+
+
+
         startForeground(110, notification);
 
-        Log.d("lvyang", "onstartCommand");
-        return START_STICKY;
+        return START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("lvyang", "service ondestroy");
     }
 }
