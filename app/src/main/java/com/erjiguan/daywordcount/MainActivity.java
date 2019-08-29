@@ -5,14 +5,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
 import android.app.FragmentTransaction;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.RemoteViews;
+import android.widget.Toast;
 
-import com.erjiguan.daywordcount.service.RecordService;
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.view.fragment.WordDicFragment;
 import com.erjiguan.daywordcount.view.fragment.WordSoundFragment;
@@ -24,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private WordCloudFragment wordCloudFragment;
     private WordSoundFragment wordSoundFragment;
     private WordDicFragment wordDicFragment;
+    private NotificationManager notificationManager;
+    private CloseListenServiceBroadcast closeListenServiceBroadcast;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -61,7 +75,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        closeListenServiceBroadcast = new CloseListenServiceBroadcast(this);
+        closeListenServiceBroadcast.registerAction("com.notification.intent.action.ButtonClick");
+    }
 
+    @Override
+    protected void onDestroy() {
+        notificationManager.cancel(126);
+        unregisterReceiver(closeListenServiceBroadcast);
+        super.onDestroy();
+    }
+
+    class CloseListenServiceBroadcast extends BroadcastReceiver {
+        Context context;
+
+        public CloseListenServiceBroadcast(Context c) {
+            context = c;
+        }
+
+        public void registerAction(String action) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(action);
+
+            context.registerReceiver(this, filter);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO 收到广播后打开一个悬浮窗，让用户选择是否关闭监听的辅助服务
+            Log.d("lvyang", "broadcast close received");
+        }
     }
 
     private void init(){
@@ -121,8 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.start_record:
-                                Intent recordServiceIntent = new Intent(MainActivity.this, RecordService.class);
-                                startService(recordServiceIntent);
+                                createNotification();
                                 break;
                             case R.id.record_setting:
                                 break;
@@ -140,5 +182,42 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void createNotification() {
+        int accessibilityEnabled = 0;
+        try {
+            accessibilityEnabled = Settings.Secure.getInt(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setComponent(new ComponentName(this, MainActivity.class));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.record_notification);
+        Notification.Builder builder = new Notification.Builder(getApplicationContext(), NOTIFICATION_SERVICE).setContent(remoteViews);
+        builder.setTicker("录音启动").setWhen(System.currentTimeMillis()).setSmallIcon(R.drawable.sound_recorder).setContentIntent(contentIntent).setOngoing(true).setChannelId("record_sound");
+        Notification notification = builder.build();
+
+        // 通知栏取消按钮
+        Intent closeListenIntent = new Intent("com.notification.intent.action.ButtonClick");
+        PendingIntent closeListenPendingIntent = PendingIntent.getBroadcast(getApplication(), 0, closeListenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.cancel_button, closeListenPendingIntent);
+
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel("record_sound", "录音", NotificationManager.IMPORTANCE_HIGH);
+        notificationManager.createNotificationChannel(channel);
+        notificationManager.notify(126, notification);
+
+        if (accessibilityEnabled == 0) {
+            Intent startListenIntent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            startActivity(startListenIntent);
+        } else {
+            Toast.makeText(this, "微信输入监听已经开启", Toast.LENGTH_SHORT).show();
+        }
     }
 }
