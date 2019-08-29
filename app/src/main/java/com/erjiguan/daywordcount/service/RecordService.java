@@ -36,9 +36,16 @@ public class RecordService extends Service {
         NotificationChannel channel = new NotificationChannel("record_sound", "录音", NotificationManager.IMPORTANCE_HIGH);
         notificationManager.createNotificationChannel(channel);
 
+        // 通知栏取消按钮
         Intent closeRecordIntent = new Intent(this, CloseRecordServiceBroadcast.class);
         PendingIntent closeRecordPendingIntent = PendingIntent.getBroadcast(getApplication(), 0, closeRecordIntent, 0);
         remoteViews.setOnClickPendingIntent(R.id.cancel_button, closeRecordPendingIntent);
+
+        // 通知栏停止按钮
+
+
+        // 通知栏开始暂停按钮
+
 
 
 
