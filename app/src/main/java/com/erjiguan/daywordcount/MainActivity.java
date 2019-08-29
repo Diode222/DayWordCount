@@ -6,6 +6,7 @@ import androidx.appcompat.widget.PopupMenu;
 
 import android.animation.ValueAnimator;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.widget.Button;
 
+import com.erjiguan.daywordcount.service.RecordService;
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.view.fragment.WordDicFragment;
 import com.erjiguan.daywordcount.view.fragment.WordSoundFragment;
@@ -122,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
                         switch (item.getItemId()) {
                             case R.id.start_record:
                                 Log.d("lvyang", "start_record");
+                                Intent recordServiceIntent = new Intent(MainActivity.this, RecordService.class);
+                                startService(recordServiceIntent);
                                 break;
                             case R.id.record_setting:
                                 Log.d("lvyang", "record_setting");
