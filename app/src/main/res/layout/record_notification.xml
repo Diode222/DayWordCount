@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/record_notification"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/sound_recorder"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="5dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="录       音"
+            android:textColor="#BFDE3163"
+            android:textSize="15dp"/>
+
+        <Chronometer
+            android:id="@+id/timeer"
+            android:format="00:00:00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp" >
+
+        <Button
+            android:id="@+id/notification_record_button"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/record_button_press" />
+
+        <Button
+            android:id="@+id/notification_stop_button"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/stop_button" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/cancel_button" />
+
+    </LinearLayout>
+
+</LinearLayout>
