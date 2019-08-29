@@ -2,16 +2,23 @@ package com.erjiguan.daywordcount;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 
+import android.animation.ValueAnimator;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.widget.Button;
 
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.view.fragment.WordDicFragment;
 import com.erjiguan.daywordcount.view.fragment.WordSoundFragment;
+import com.erjiguan.diodemenupopup.DiodeMenuPopup;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,16 +53,10 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Button settingButton = (Button) findViewById(R.id.title_setting_button);
-        Button recordSoundButton = (Button) findViewById(R.id.title_record_sound_button);
+        View view = findViewById(R.id.popup_image_style);
+        recordSoundPopup(view);
 
         settingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO
-            }
-        });
-
-        recordSoundButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // TODO
@@ -99,5 +100,47 @@ public class MainActivity extends AppCompatActivity {
                 beginTransaction.commit();
                 break;
         }
+    }
+
+    private void recordSoundPopup(View view) {
+        final DiodeMenuPopup recordPopup = new DiodeMenuPopup(this, view);
+        recordPopup.getMenuInflater().inflate(R.menu.record_sound_menu, recordPopup.getMenu());
+
+        final Window window = getWindow();
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        recordPopup.show();
+                        recordPopup.dimBackground(1.0f, 0.5f, 200, window);
+                    }
+                });
+
+                recordPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.start_record:
+                                Log.d("lvyang", "start_record");
+                                break;
+                            case R.id.record_setting:
+                                Log.d("lvyang", "record_setting");
+                                break;
+                        }
+
+                        return true;
+                    }
+                });
+
+                recordPopup.setOnDismissListener(new PopupMenu.OnDismissListener() {
+                    @Override
+                    public void onDismiss(PopupMenu menu) {
+                        recordPopup.dimBackground(0.5f, 1.0f, 200, window);
+                    }
+                });
+            }
+        });
     }
 }
