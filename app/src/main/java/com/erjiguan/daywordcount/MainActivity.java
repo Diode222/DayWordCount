@@ -32,6 +32,8 @@ import com.erjiguan.daywordcount.view.fragment.WordSoundFragment;
 import com.erjiguan.diodemenupopup.DiodeMenuPopup;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import jackmego.com.jieba_android.JiebaSegmenter;
+
 public class MainActivity extends AppCompatActivity {
 
     private WordCloudFragment wordCloudFragment;
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         beginTransaction.hide(wordCloudFragment).hide(wordSoundFragment).hide(wordDicFragment);//隐藏fragment
         beginTransaction.addToBackStack(null);//返回到上一个显示的fragment
         beginTransaction.commit();//每一个事务最后操作必须是commit（），否则看不见效果
+
         showNav(R.id.word_cloud);
     }
 
@@ -166,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.start_record:
+                                // 异步初始化jieba分词
+                                JiebaSegmenter.init(getApplicationContext());
                                 createNotificationAndOpenAccesibilitySetting();
                                 break;
                             case R.id.record_setting:
