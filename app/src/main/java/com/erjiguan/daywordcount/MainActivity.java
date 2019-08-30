@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        notificationManager.cancel(GlobalNumber.notificationId);
+        notificationManager.cancel(GlobalNumber.NOTIFICATION_ID);
         unregisterReceiver(closeListenServiceBroadcast);
         super.onDestroy();
     }
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent closeListenPendingIntent = PendingIntent.getBroadcast(getApplication(), 0, closeListenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.cancel_button, closeListenPendingIntent);
 
-        notificationManager.notify(GlobalNumber.notificationId, notification);
+        notificationManager.notify(GlobalNumber.NOTIFICATION_ID, notification);
 
         if (accessibilityEnabled == 0) {
             Intent startListenIntent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("关闭通知栏和辅助服务", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    notificationManager.cancel(GlobalNumber.notificationId);
+                    notificationManager.cancel(GlobalNumber.NOTIFICATION_ID);
                     Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
                     Toast.makeText(getApplication(), "设置关闭DayWordCount辅助服务", Toast.LENGTH_LONG).show();
                     startActivity(intent);
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setNegativeButton("仅关闭通知栏", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    notificationManager.cancel(GlobalNumber.notificationId);
+                    notificationManager.cancel(GlobalNumber.NOTIFICATION_ID);
                 }
             });
             builder.setNeutralButton("取消", new DialogInterface.OnClickListener() {
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             Toast.makeText(getApplicationContext(), "当前未开启监听", Toast.LENGTH_LONG).show();
-            notificationManager.cancel(GlobalNumber.notificationId);
+            notificationManager.cancel(GlobalNumber.NOTIFICATION_ID);
         }
     }
 }
