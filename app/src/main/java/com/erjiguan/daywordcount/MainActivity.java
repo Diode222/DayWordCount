@@ -26,6 +26,9 @@ import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.erjiguan.daywordcount.controller.DBController;
+import com.erjiguan.daywordcount.global.DBControllerInstance;
+import com.erjiguan.daywordcount.global.WordFreqDBInstance;
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.view.fragment.WordDicFragment;
 import com.erjiguan.daywordcount.view.fragment.WordSoundFragment;
@@ -112,6 +115,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
+        WordFreqDBInstance.init(this);  // 必须先定义WordFreqDB再定义DBController，DBController依赖WordFreqDB
+        DBControllerInstance.init(this);
+
         wordCloudFragment = new WordCloudFragment();
         wordSoundFragment = new WordSoundFragment();
         wordDicFragment = new WordDicFragment();

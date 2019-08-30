@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.erjiguan.daywordcount.R;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
 import com.erjiguan.daywordcount.controller.DBController;
+import com.erjiguan.daywordcount.global.DBControllerInstance;
 import com.erjiguan.daywordcount.view.view_manager.BarChartManager;
 import com.erjiguan.wordcloudviewlib.WordCloudView;
 import com.github.mikephil.charting.charts.BarChart;
@@ -44,13 +45,12 @@ public class WordCloudFragment extends Fragment {
 
     private int CURRENT_VIEW = IN_TAG_CLOUD_VIEW;
 
-    private static DBController dbController;
+    private static DBController dbController = DBControllerInstance.dbController;
 
     ArrayList<ArrayList<Object> > dataList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        dbController = DBController.getInstance(this.getContext());
         dataList = dbController.getWordFreqData(DBController.INTENSIVE);
 
         this.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -104,13 +104,7 @@ public class WordCloudFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-//                // 默認3D詞雲
-//                tagCloudView.setVisibility(View.VISIBLE);
-//                wordCloudView.setVisibility(View.GONE);
-//                barChartView.setVisibility(View.GONE);
-//                CURRENT_VIEW = IN_TAG_CLOUD_VIEW;
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
         dataAmountSpinner = (Spinner) view.findViewById(R.id.data_amount_spinner);

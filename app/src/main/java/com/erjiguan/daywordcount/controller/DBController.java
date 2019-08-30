@@ -2,6 +2,7 @@ package com.erjiguan.daywordcount.controller;
 
 import android.content.Context;
 
+import com.erjiguan.daywordcount.global.WordFreqDBInstance;
 import com.erjiguan.daywordcount.model.WordFreqDB;
 import com.erjiguan.daywordcount.model.entity.WordFreqEntity;
 
@@ -16,13 +17,11 @@ public class DBController {
 
     public ArrayList<ArrayList<Object> > dataList = new ArrayList<ArrayList<Object> >();
 
-    private static WordFreqDB wordFreqDB;
+    private static WordFreqDB wordFreqDB = WordFreqDBInstance.wordFreqDB;
 
     private static DBController dbControllerInstance;
 
-    private DBController(Context context) {
-        wordFreqDB = WordFreqDB.getInstance(context);
-    }
+    private DBController(Context context) { }
 
     public static synchronized DBController getInstance(Context context) {
         if (dbControllerInstance == null) {
@@ -47,6 +46,33 @@ public class DBController {
         }
 
         return dataList;
+    }
+
+    public void setWordFreqData(final ArrayList<String> wordList) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (this) {  // 写数据必须加锁
+                    for (final String wordListened: wordList) {
+                        if (wordListened.length() <= 1) {
+                            continue;
+                        }
+                        final List<WordFreqEntity> wordEntity = WordFreqDBInstance.wordFreqDB.wordFreqDao().getCountByWord(wordListened);
+                        if (wordEntity.size() <= 0) {
+                            WordFreqDBInstance.wordFreqDB.wordFreqDao().insertWord(new WordFreqEntity() {{
+                                this.word = wordListened;
+                                this.count = 1;
+                            }});
+                        } else {
+                            WordFreqDBInstance.wordFreqDB.wordFreqDao().updateWord(new WordFreqEntity() {{
+                                this.word = wordListened;
+                                this.count = wordEntity.get(0).count + 1;
+                            }});
+                        }
+                    }
+                }
+            }
+        }).start();
     }
 
     // 获取密集数据
