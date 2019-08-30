@@ -35,4 +35,8 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.Diode222:DiodeMenuPopup:v1.11'
     implementation 'jackmego.com.jieba_android:jieba_android-release:0.1.0'
+
+    def room_version = "2.1.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 }
