@@ -16,7 +16,7 @@ public abstract class WordFreqDB extends RoomDatabase {
 
     public static synchronized WordFreqDB getInstance(Context context) {
         if (dbInstance == null) {
-            dbInstance = Room.databaseBuilder(context.getApplicationContext(), WordFreqDB.class, DB_NAME).build();
+            dbInstance = Room.databaseBuilder(context.getApplicationContext(), WordFreqDB.class, DB_NAME).allowMainThreadQueries().build();
         }
         return dbInstance;
     }
