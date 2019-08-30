@@ -18,10 +18,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -171,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                                 createNotificationAndOpenAccesibilitySetting();
                                 break;
                             case R.id.record_setting:
+                                closeDialog();
                                 break;
                         }
 

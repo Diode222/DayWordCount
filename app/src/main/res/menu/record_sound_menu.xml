@@ -6,6 +6,6 @@
 
     <item
         android:id="@+id/record_setting"
-        android:title="监听设置" />
+        android:title="关闭监听" />
 
 </menu>
