@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.erjiguan.daywordcount.R;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
-import com.erjiguan.daywordcount.presenter.DataFormatter;
+import com.erjiguan.daywordcount.controller.DBController;
 import com.erjiguan.daywordcount.view.view_manager.BarChartManager;
 import com.erjiguan.wordcloudviewlib.WordCloudView;
 import com.github.mikephil.charting.charts.BarChart;
@@ -44,10 +44,15 @@ public class WordCloudFragment extends Fragment {
 
     private int CURRENT_VIEW = IN_TAG_CLOUD_VIEW;
 
-    ArrayList<ArrayList<Object> > dataList = DataFormatter.getFormatedData(DataFormatter.INTENSIVE);
+    private static DBController dbController;
+
+    ArrayList<ArrayList<Object> > dataList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        dbController = DBController.getInstance(this.getContext());
+        dataList = dbController.getWordFreqData(DBController.INTENSIVE);
+
         this.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         final View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
@@ -125,13 +130,13 @@ public class WordCloudFragment extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View arg1, int i, long l) {
                 switch (i) {
                     case 0:  // 0表示密集
-                        dataList = DataFormatter.getFormatedData(DataFormatter.INTENSIVE);
+                        dataList = dbController.getWordFreqData(DBController.INTENSIVE);
                         break;
                     case 1:  // 1表示适量
-                        dataList = DataFormatter.getFormatedData(DataFormatter.MODERATE);
+                        dataList = dbController.getWordFreqData(DBController.MODERATE);
                         break;
                     case 2:  // 2表示稀疏
-                        dataList = DataFormatter.getFormatedData(DataFormatter.SPARSE);
+                        dataList = dbController.getWordFreqData(DBController.SPARSE);
                         break;
                 }
 
@@ -142,16 +147,6 @@ public class WordCloudFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-//                // 默认用密集显示
-//                dataList = DataFormatter.getFormatedData(DataFormatter.INTENSIVE);
-//
-//                View framentView = inflater.inflate(R.layout.wordcloud_fragment, container, false);
-//                tagCloudView.removeAllViews();
-//                createTagCloudView(framentView, dataList);
-//                wordCloudView.removeAllViews();
-//                createWordCloudView(framentView, dataList);
-//                barChartView.removeAllViews();
-//                createBarChartView(framentView, dataList);
             }
         });
 

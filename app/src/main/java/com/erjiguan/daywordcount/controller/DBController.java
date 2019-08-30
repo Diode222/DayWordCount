@@ -16,13 +16,22 @@ public class DBController {
 
     public ArrayList<ArrayList<Object> > dataList = new ArrayList<ArrayList<Object> >();
 
-    final private WordFreqDB wordFreqDB;
+    private static WordFreqDB wordFreqDB;
 
-    public DBController(Context context) {
+    private static DBController dbControllerInstance;
+
+    private DBController(Context context) {
         wordFreqDB = WordFreqDB.getInstance(context);
     }
 
-    public ArrayList<ArrayList<Object>> getWordFreqData(int dataAmount) {
+    public static synchronized DBController getInstance(Context context) {
+        if (dbControllerInstance == null) {
+            dbControllerInstance = new DBController(context);
+        }
+        return dbControllerInstance;
+    }
+
+    public ArrayList<ArrayList<Object> > getWordFreqData(int dataAmount) {
         switch (dataAmount) {
             case INTENSIVE:
                 getWordFreqDataIntensive();
@@ -34,13 +43,14 @@ public class DBController {
                 getWordFreqDataSparse();
                 break;
             default:
-
+                getWordFreqDataIntensive();
         }
+
         return dataList;
     }
 
     // 获取密集数据
-    private void getWordFreqDataIntensive() {
+    private ArrayList<ArrayList<Object> > getWordFreqDataIntensive() {
         dataList = new ArrayList<ArrayList<Object> >();
         List<WordFreqEntity> rawData = wordFreqDB.wordFreqDao().getWordListIntensive();
 
@@ -50,10 +60,12 @@ public class DBController {
                 add(entity.count);
             }});
         }
+
+        return dataList;
     }
 
     // 获取适量数据
-    private void getWordFreqDataModerate() {
+    private ArrayList<ArrayList<Object> > getWordFreqDataModerate() {
         dataList = new ArrayList<ArrayList<Object> >();
         List<WordFreqEntity> rawData = wordFreqDB.wordFreqDao().getWordListModerate();
 
@@ -63,10 +75,12 @@ public class DBController {
                 add(entity.count);
             }});
         }
+
+        return dataList;
     }
 
     // 获取稀疏数据
-    private void getWordFreqDataSparse() {
+    private ArrayList<ArrayList<Object> > getWordFreqDataSparse() {
         dataList = new ArrayList<ArrayList<Object> >();
         List<WordFreqEntity> rawData = wordFreqDB.wordFreqDao().getWordListSparse();
 
@@ -76,5 +90,7 @@ public class DBController {
                 add(entity.count);
             }});
         }
+
+        return dataList;
     }
 }
