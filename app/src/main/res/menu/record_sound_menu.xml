@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/start_record"
-        android:title="开始录音" />
+        android:title="开始监听" />
 
     <item
         android:id="@+id/record_setting"
-        android:title="录音设置" />
+        android:title="监听设置" />
 
 </menu>
