@@ -26,7 +26,6 @@ import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.erjiguan.daywordcount.controller.DBController;
 import com.erjiguan.daywordcount.global.DBControllerInstance;
 import com.erjiguan.daywordcount.global.WordFreqDBInstance;
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
@@ -118,6 +117,10 @@ public class MainActivity extends AppCompatActivity {
         WordFreqDBInstance.init(this);  // 必须先定义WordFreqDB再定义DBController，DBController依赖WordFreqDB
         DBControllerInstance.init(this);
 
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel("record_sound", "录音", NotificationManager.IMPORTANCE_HIGH);
+        notificationManager.createNotificationChannel(channel);
+
         wordCloudFragment = new WordCloudFragment();
         wordSoundFragment = new WordSoundFragment();
         wordDicFragment = new WordDicFragment();
@@ -174,12 +177,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.start_record:
+                            case R.id.start_listen:
                                 // 异步初始化jieba分词
                                 JiebaSegmenter.init(getApplicationContext());
                                 createNotificationAndOpenAccesibilitySetting();
                                 break;
-                            case R.id.record_setting:
+                            case R.id.stop_listen:
                                 closeDialog();
                                 break;
                         }
@@ -222,9 +225,6 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent closeListenPendingIntent = PendingIntent.getBroadcast(getApplication(), 0, closeListenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.cancel_button, closeListenPendingIntent);
 
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel("record_sound", "录音", NotificationManager.IMPORTANCE_HIGH);
-        notificationManager.createNotificationChannel(channel);
         notificationManager.notify(126, notification);
 
         if (accessibilityEnabled == 0) {
