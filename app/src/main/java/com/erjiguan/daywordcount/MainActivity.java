@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,14 +13,15 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private WordDicFragment wordDicFragment;
     private NotificationManager notificationManager;
     private CloseListenServiceBroadcast closeListenServiceBroadcast;
+    private AlertDialog alertDialog;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -102,8 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            // TODO 收到广播后打开一个悬浮窗，让用户选择是否关闭监听的辅助服务
-            Log.d("lvyang", "broadcast close received");
+            closeDialog();
         }
     }
 
@@ -164,9 +166,10 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.start_record:
-                                createNotification();
+                                createNotificationAndOpenAccesibilitySetting();
                                 break;
                             case R.id.record_setting:
+                                closeDialog();
                                 break;
                         }
 
@@ -184,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void createNotification() {
+    private void createNotificationAndOpenAccesibilitySetting() {
         int accessibilityEnabled = 0;
         try {
             accessibilityEnabled = Settings.Secure.getInt(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
@@ -218,6 +221,50 @@ public class MainActivity extends AppCompatActivity {
             startActivity(startListenIntent);
         } else {
             Toast.makeText(this, "微信输入监听已经开启", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void closeDialog() {
+        int accessibilityEnabled = 0;
+        try {
+            accessibilityEnabled = Settings.Secure.getInt(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (accessibilityEnabled == 1) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+            builder.setTitle("关闭方式");
+            builder.setIcon(R.mipmap.ic_launcher_round);
+            builder.setCancelable(true);
+            builder.setPositiveButton("关闭通知栏和辅助服务", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    notificationManager.cancel(126);
+                    Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    Toast.makeText(getApplication(), "设置关闭DayWordCount辅助服务", Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                }
+            });
+            builder.setNegativeButton("仅关闭通知栏", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    notificationManager.cancel(126);
+                }
+            });
+            builder.setNeutralButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+
+            alertDialog = builder.create();
+            alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+            alertDialog.show();
+        } else {
+            Toast.makeText(getApplicationContext(), "当前未开启监听", Toast.LENGTH_LONG).show();
+            notificationManager.cancel(126);
         }
     }
 }
