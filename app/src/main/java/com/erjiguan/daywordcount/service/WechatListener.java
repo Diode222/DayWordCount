@@ -18,8 +18,8 @@ public class WechatListener extends AccessibilityService {
         CharSequence packageName = event.getPackageName();
         if (packageName.equals("com.tencent.mm") && (eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED || eventType == AccessibilityEvent.TYPE_VIEW_CLICKED)) {
             if (eventType == AccessibilityEvent.TYPE_VIEW_CLICKED && event.getText().toString().equals("[发送]")) {
-                inputString = inputString.substring(1, inputString.length() - 1);
-                if (inputString.length() > 0) {
+                String insideInputString = inputString.substring(1, inputString.length() - 1).trim();
+                if (insideInputString.length() > 0) {
                     RequestCallback<ArrayList<String> > callback = new RequestCallback<ArrayList<String>>() {
                         @Override
                         public void onSuccess(ArrayList<String> result) {
@@ -31,7 +31,7 @@ public class WechatListener extends AccessibilityService {
                             Log.d("Jieba", "Jieba分词失败: " + errorMsg);
                         }
                     };
-                    JiebaSegmenter.getJiebaSegmenterSingleton().getDividedStringAsync(inputString, callback);
+                    JiebaSegmenter.getJiebaSegmenterSingleton().getDividedStringAsync(insideInputString, callback);
                 }
             } else {
                 inputString = event.getText().toString();
