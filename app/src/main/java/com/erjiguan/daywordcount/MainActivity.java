@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private WordDicFragment wordDicFragment;
     private NotificationManager notificationManager;
     private CloseListenServiceBroadcast closeListenServiceBroadcast;
-    private AlertDialog alertDialog;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -270,9 +269,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            alertDialog = builder.create();
-            alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-            alertDialog.show();
+            AlertDialog alertDialog = builder.create();
+            if (Settings.canDrawOverlays(this)) {
+                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+                alertDialog.show();
+            } else {
+                Intent canDrawOverlaysIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                startActivity(canDrawOverlaysIntent);
+            }
         } else {
             Toast.makeText(getApplicationContext(), "当前未开启监听", Toast.LENGTH_LONG).show();
             notificationManager.cancel(126);
