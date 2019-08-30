@@ -54,19 +54,19 @@ public class BarChartManager {
 
         //折线图例 标签 设置
         Legend legend = mBarChart.getLegend();
-        legend.setForm(Legend.LegendForm.LINE);
+        legend.setForm(Legend.LegendForm.SQUARE);
         legend.setTextSize(11f);
         //显示位置
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         legend.setDrawInside(false);
 
         //XY轴的设置
         //X轴设置显示位置在底部
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelRotationAngle(270f);
         xAxis.setGranularity(1f);
-        xAxis.setCenterAxisLabels(true);
         //保证Y轴从0开始，不然会上移一点
         leftAxis.setAxisMinimum(0f);
         rightAxis.setAxisMinimum(0f);
@@ -131,47 +131,6 @@ public class BarChartManager {
         xAxis.setLabelCount(xAxisValues.size() - 1, false);
         mBarChart.setData(data);
     }
-
-//    /**
-//     * 展示柱状图(多条)
-//     *
-//     * @param xAxisValues
-//     * @param yAxisValues
-//     * @param labels
-//     * @param colours
-//     */
-//    public void showBarChart(List<Float> xAxisValues, List<List<Float>> yAxisValues, List<String> labels, List<Integer> colours) {
-//        initLineChart();
-//        BarData data = new BarData();
-//        for (int i = 0; i < yAxisValues.size(); i++) {
-//            ArrayList<BarEntry> entries = new ArrayList<>();
-//            for (int j = 0; j < yAxisValues.get(i).size(); j++) {
-//
-//                entries.add(new BarEntry(xAxisValues.get(j), yAxisValues.get(i).get(j)));
-//            }
-//            BarDataSet barDataSet = new BarDataSet(entries, labels.get(i));
-//
-//            barDataSet.setColor(colours.get(i));
-//            barDataSet.setValueTextColor(colours.get(i));
-//            barDataSet.setValueTextSize(10f);
-//            barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-//            data.addDataSet(barDataSet);
-//        }
-//        int amount = yAxisValues.size();
-//
-//        float groupSpace = 0.12f; //柱状图组之间的间距
-//        float barSpace = (float) ((1 - 0.12) / amount / 10); // x4 DataSet
-//        float barWidth = (float) ((1 - 0.12) / amount / 10 * 9); // x4 DataSet
-//
-//        // (0.2 + 0.02) * 4 + 0.08 = 1.00 -> interval per "group"
-//        xAxis.setLabelCount(xAxisValues.size() - 1, false);
-//        data.setBarWidth(barWidth);
-//
-//
-//        data.groupBars(0, groupSpace, barSpace);
-//        mBarChart.setData(data);
-//    }
-
 
     /**
      * 设置Y轴值
