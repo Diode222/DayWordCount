@@ -17,6 +17,7 @@ import com.erjiguan.daywordcount.R;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
 import com.erjiguan.daywordcount.controller.DBController;
 import com.erjiguan.daywordcount.global.DBControllerInstance;
+import com.erjiguan.daywordcount.global.GlobalNumber;
 import com.erjiguan.daywordcount.view.view_manager.BarChartManager;
 import com.erjiguan.wordcloudviewlib.WordCloudView;
 import com.github.mikephil.charting.charts.BarChart;
@@ -159,12 +160,33 @@ public class WordCloudFragment extends Fragment {
         wordCloudView = (WordCloudView) view.findViewById(R.id.word_cloud_view);
         wordCloudView.removeAllViews();
         wordCloudView.CleanWordCloudView();
-        for (int i = 0; i < dataList.size(); i++) {
-            String word = (String) dataList.get(i).get(0);
-            int weight = (int) dataList.get(i).get(1);
-            wordCloudView.addTextView(word, weight);
+        // 对词云中词云大小进行量化
+        if (dataList.size() <= 1) {
+            for (int i = 0; i < dataList.size(); i++) {
+                String word = (String) dataList.get(i).get(0);
+                int quantificationWeight = GlobalNumber.WORD_CLOUD_DEFAULT_SIZE;
+                wordCloudView.addTextView(word, quantificationWeight);
+            }
+        } else if (dataList.get(0).get(1) == dataList.get(dataList.size() - 1).get(1)) {
+            for (int i = 0; i < dataList.size(); i++) {
+                String word = (String) dataList.get(i).get(0);
+                int quantificationWeight = (int) (GlobalNumber.WORD_CLOUD_DEFAULT_SIZE / 2.0f);
+                wordCloudView.addTextView(word, quantificationWeight);
+            }
+        } else {
+            int maxCount = (int) dataList.get(0).get(1);
+            int minCount = (int) dataList.get(dataList.size() - 1).get(1);
+            for (int i = 0; i < dataList.size(); i++) {
+                String word = (String) dataList.get(i).get(0);
+                int quantificationWeight = getQuantificationWeight((int) dataList.get(i).get(1), maxCount, minCount);
+                wordCloudView.addTextView(word, quantificationWeight);
+            }
         }
         wordCloudView.invalidate();
+    }
+
+    public int getQuantificationWeight(int count, int maxCount, int minCount) {
+        return (int) ((float) (GlobalNumber.WORD_CLOUD_MAX_SIZE - GlobalNumber.WORD_CLOUD_MIN_SIZE) / (float) (maxCount - minCount) * (float) (count - minCount) + (float) GlobalNumber.WORD_CLOUD_MIN_SIZE);
     }
 
     public void createBarChartView(View view, ArrayList<ArrayList<Object> > dataList) {
