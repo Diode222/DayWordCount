@@ -27,6 +27,7 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.erjiguan.daywordcount.global.DBControllerInstance;
+import com.erjiguan.daywordcount.global.GlobalNumber;
 import com.erjiguan.daywordcount.global.WordFreqDBInstance;
 import com.erjiguan.daywordcount.view.fragment.WordCloudFragment;
 import com.erjiguan.daywordcount.view.fragment.WordDicFragment;
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        notificationManager.cancel(126);
+        notificationManager.cancel(GlobalNumber.notificationId);
         unregisterReceiver(closeListenServiceBroadcast);
         super.onDestroy();
     }
@@ -224,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent closeListenPendingIntent = PendingIntent.getBroadcast(getApplication(), 0, closeListenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.cancel_button, closeListenPendingIntent);
 
-        notificationManager.notify(126, notification);
+        notificationManager.notify(GlobalNumber.notificationId, notification);
 
         if (accessibilityEnabled == 0) {
             Intent startListenIntent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -250,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("关闭通知栏和辅助服务", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    notificationManager.cancel(126);
+                    notificationManager.cancel(GlobalNumber.notificationId);
                     Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
                     Toast.makeText(getApplication(), "设置关闭DayWordCount辅助服务", Toast.LENGTH_LONG).show();
                     startActivity(intent);
@@ -259,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setNegativeButton("仅关闭通知栏", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    notificationManager.cancel(126);
+                    notificationManager.cancel(GlobalNumber.notificationId);
                 }
             });
             builder.setNeutralButton("取消", new DialogInterface.OnClickListener() {
@@ -279,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             Toast.makeText(getApplicationContext(), "当前未开启监听", Toast.LENGTH_LONG).show();
-            notificationManager.cancel(126);
+            notificationManager.cancel(GlobalNumber.notificationId);
         }
     }
 }
