@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.erjiguan.daywordcount.R;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
@@ -45,6 +46,12 @@ public class WordCloudFragment extends Fragment {
     final private int IN_BAR_CHART_VIEW = 2;
 
     private int CURRENT_VIEW = IN_TAG_CLOUD_VIEW;
+
+    final private int INTENSIVE_DATA = 0;
+    final private int MODERATE_DATA = 1;
+    final private int SPARSE_DATA = 2;
+
+    private int CURRENT_DATA_AMOUNT = INTENSIVE_DATA;
 
     private static DBController dbController = DBControllerInstance.dbController;
 
@@ -126,12 +133,15 @@ public class WordCloudFragment extends Fragment {
                 switch (i) {
                     case 0:  // 0表示密集
                         dataList = dbController.getWordFreqData(DBController.INTENSIVE);
+                        CURRENT_DATA_AMOUNT = INTENSIVE_DATA;
                         break;
                     case 1:  // 1表示适量
                         dataList = dbController.getWordFreqData(DBController.MODERATE);
+                        CURRENT_DATA_AMOUNT = MODERATE_DATA;
                         break;
                     case 2:  // 2表示稀疏
                         dataList = dbController.getWordFreqData(DBController.SPARSE);
+                        CURRENT_DATA_AMOUNT = SPARSE_DATA;
                         break;
                 }
 
@@ -144,6 +154,9 @@ public class WordCloudFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
+        // 下拉刷新初始化
+        initSwipeFresh(view);
 
         return view;
     }
@@ -206,5 +219,33 @@ public class WordCloudFragment extends Fragment {
 
         barChartManager.showBarChart(xVals, yVals, "词频统计", Color.BLUE);
         barChartView.invalidate();
+    }
+
+    public void initSwipeFresh(final View view) {
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.word_cloud_fragment_swipe_fresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                switch (CURRENT_DATA_AMOUNT) {
+                    case INTENSIVE_DATA:
+                        dataList = dbController.getWordFreqData(DBController.INTENSIVE);
+                        break;
+                    case MODERATE_DATA:
+                        dataList = dbController.getWordFreqData(DBController.MODERATE);
+                        break;
+                    case SPARSE_DATA:
+                        dataList = dbController.getWordFreqData(DBController.SPARSE);
+                        break;
+                    default:
+                        dataList = dbController.getWordFreqData(DBController.INTENSIVE);
+                }
+
+                createTagCloudView(view, dataList);
+                createWordCloudView(view, dataList);
+                createBarChartView(view, dataList);
+
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 }
