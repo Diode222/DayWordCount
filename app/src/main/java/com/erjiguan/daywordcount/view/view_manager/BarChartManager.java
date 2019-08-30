@@ -3,9 +3,7 @@ package com.erjiguan.daywordcount.view.view_manager;
 import android.graphics.Color;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -52,6 +50,8 @@ public class BarChartManager {
         //设置动画效果
         mBarChart.animateXY(1000, 1000);
 
+        mBarChart.setDrawValueAboveBar(true);
+
         //折线图例 标签 设置
         Legend legend = mBarChart.getLegend();
         legend.setForm(Legend.LegendForm.SQUARE);
@@ -67,9 +67,12 @@ public class BarChartManager {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setLabelRotationAngle(270f);
         xAxis.setGranularity(1f);
+        xAxis.setAxisMinimum(-0.5f);
         //保证Y轴从0开始，不然会上移一点
         leftAxis.setAxisMinimum(0f);
         rightAxis.setAxisMinimum(0f);
+        leftAxis.setLabelCount(1);
+        rightAxis.setLabelCount(1);
     }
 
     /**
@@ -117,12 +120,19 @@ public class BarChartManager {
         }
 
         mBarChart.getBarData().setBarWidth(0.45f);
-        mBarChart.getXAxis().setAxisMinimum(0);
 
         barDataSet.setColor(color);
-        barDataSet.setValueTextSize(9f);
+        barDataSet.setValueTextSize(14f);
+        barDataSet.setValueTextColor(Color.BLACK);
         barDataSet.setFormLineWidth(1f);
         barDataSet.setFormSize(15.f);
+        barDataSet.setDrawValues(true);
+        barDataSet.setValueFormatter(new IndexAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return (int) value + "";
+            }
+        });
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
         dataSets.add(barDataSet);
@@ -130,89 +140,5 @@ public class BarChartManager {
         //设置X轴的刻度数
         xAxis.setLabelCount(xAxisValues.size() - 1, false);
         mBarChart.setData(data);
-    }
-
-    /**
-     * 设置Y轴值
-     *
-     * @param max
-     * @param min
-     * @param labelCount
-     */
-    public void setYAxis(float max, float min, int labelCount) {
-        if (max < min) {
-            return;
-        }
-        leftAxis.setAxisMaximum(max);
-        leftAxis.setAxisMinimum(min);
-        leftAxis.setLabelCount(labelCount, false);
-
-        rightAxis.setAxisMaximum(max);
-        rightAxis.setAxisMinimum(min);
-        rightAxis.setLabelCount(labelCount, false);
-        mBarChart.invalidate();
-    }
-
-    /**
-     * 设置X轴的值
-     *
-     * @param max
-     * @param min
-     * @param labelCount
-     */
-    public void setXAxis(float max, float min, int labelCount) {
-        xAxis.setAxisMaximum(max);
-        xAxis.setAxisMinimum(min);
-        xAxis.setLabelCount(labelCount, false);
-
-        mBarChart.invalidate();
-    }
-
-    /**
-     * 设置高限制线
-     *
-     * @param high
-     * @param name
-     */
-    public void setHightLimitLine(float high, String name, int color) {
-        if (name == null) {
-            name = "高限制线";
-        }
-        LimitLine hightLimit = new LimitLine(high, name);
-        hightLimit.setLineWidth(4f);
-        hightLimit.setTextSize(10f);
-        hightLimit.setLineColor(color);
-        hightLimit.setTextColor(color);
-        leftAxis.addLimitLine(hightLimit);
-        mBarChart.invalidate();
-    }
-
-    /**
-     * 设置低限制线
-     *
-     * @param low
-     * @param name
-     */
-    public void setLowLimitLine(int low, String name) {
-        if (name == null) {
-            name = "低限制线";
-        }
-        LimitLine hightLimit = new LimitLine(low, name);
-        hightLimit.setLineWidth(4f);
-        hightLimit.setTextSize(10f);
-        leftAxis.addLimitLine(hightLimit);
-        mBarChart.invalidate();
-    }
-
-    /**
-     * 设置描述信息
-     *
-     * @param str
-     */
-    public void setDescription(String str) {
-        Description description = new Description();
-        description.setText(str);
-        mBarChart.setDescription(description);
-        mBarChart.invalidate();
     }
 }
