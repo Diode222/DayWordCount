@@ -1,7 +1,6 @@
 package com.erjiguan.daywordcount.view.fragment;
 
 import android.app.Fragment;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -61,8 +60,6 @@ public class WordCloudFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         dataList = dbController.getWordFreqData(DBController.INTENSIVE);
 
-        this.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         final View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
 
         // 3D词云图
@@ -115,6 +112,9 @@ public class WordCloudFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
+        // 下拉刷新初始化
+        initSwipeFresh(view);
+
         dataAmountSpinner = (Spinner) view.findViewById(R.id.data_amount_spinner);
         dataAmountList = new ArrayList<String>() {{
             add("密集");  //暂定
@@ -130,6 +130,8 @@ public class WordCloudFragment extends Fragment {
         dataAmountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View arg1, int i, long l) {
+                SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.word_cloud_fragment_swipe_fresh);
+                swipeRefreshLayout.setRefreshing(true);
                 switch (i) {
                     case 0:  // 0表示密集
                         dataList = dbController.getWordFreqData(DBController.INTENSIVE);
@@ -148,15 +150,14 @@ public class WordCloudFragment extends Fragment {
                 createTagCloudView(view, dataList);
                 createWordCloudView(view, dataList);
                 createBarChartView(view, dataList);
+
+                swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-
-        // 下拉刷新初始化
-        initSwipeFresh(view);
 
         return view;
     }
