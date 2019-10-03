@@ -95,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(false);
+    }
+
     class CloseListenServiceBroadcast extends BroadcastReceiver {
         Context context;
 
