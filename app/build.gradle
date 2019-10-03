@@ -20,6 +20,10 @@ android {
     }
     sourceSets {
         main {
+            java {
+                srcDir 'src/main/java'
+            }
+
             // 定义proto文件目录
             proto {
                 srcDir 'src/main/proto'

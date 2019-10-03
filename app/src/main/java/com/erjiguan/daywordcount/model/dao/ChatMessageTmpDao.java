@@ -3,6 +3,7 @@ package com.erjiguan.daywordcount.model.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.Query;
 
 import com.erjiguan.daywordcount.model.entity.ChatMessageTmpEntity;
 
@@ -27,4 +28,7 @@ public interface ChatMessageTmpDao {
 
     @Delete
     void deleteAllMessage(ChatMessageTmpEntity... mesgEntities);
+
+    @Query("select * from ChatMessageTmpEntity")
+    List<ChatMessageTmpEntity> getChatMessageList();
 }
