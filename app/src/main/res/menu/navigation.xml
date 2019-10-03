@@ -7,7 +7,7 @@
     <item
         android:id="@+id/word_sound"
         android:icon="@drawable/sound"
-        android:title="词音" />
+        android:title="词意" />
     <item
         android:id="@+id/word_dic"
         android:icon="@drawable/word_dic"

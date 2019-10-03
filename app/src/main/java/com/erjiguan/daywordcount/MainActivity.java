@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.MenuItem;
@@ -67,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
+        resourceInit();
+        uiInit();
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -93,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(false);
+    }
+
     class CloseListenServiceBroadcast extends BroadcastReceiver {
         Context context;
 
@@ -113,13 +120,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void init(){
+    private void resourceInit() {
         WordFreqDBInstance.init(this);  // 必须先定义WordFreqDB再定义DBController，DBController依赖WordFreqDB
         DBControllerInstance.init(this);
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = new NotificationChannel("record_sound", "录音", NotificationManager.IMPORTANCE_HIGH);
         notificationManager.createNotificationChannel(channel);
+    }
+
+    private void uiInit(){
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);  // 设置不支持旋转屏幕
 
         wordCloudFragment = new WordCloudFragment();
         wordSoundFragment = new WordSoundFragment();
