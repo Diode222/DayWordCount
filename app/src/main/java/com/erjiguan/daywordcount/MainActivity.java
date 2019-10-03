@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.erjiguan.daywordcount.global.ChatMessageTmpDBInstance;
 import com.erjiguan.daywordcount.global.DBControllerInstance;
 import com.erjiguan.daywordcount.global.GlobalNumber;
 import com.erjiguan.daywordcount.global.WordFreqDBInstance;
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void resourceInit() {
         WordFreqDBInstance.init(this);  // 必须先定义WordFreqDB再定义DBController，DBController依赖WordFreqDB
+        ChatMessageTmpDBInstance.init(this);
         DBControllerInstance.init(this);
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

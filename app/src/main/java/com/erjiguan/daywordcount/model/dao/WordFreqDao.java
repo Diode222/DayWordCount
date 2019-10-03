@@ -18,6 +18,12 @@ public interface WordFreqDao {
     @Delete
     void deleteWord(WordFreqEntity wordEntity);
 
+    @Delete
+    void deleteWord(List<WordFreqEntity> wordFreqEntities);
+
+    @Delete
+    void deleteWord(WordFreqEntity... wordFreqEntities);
+
     @Update
     void updateWord(WordFreqEntity wordEntity);
 

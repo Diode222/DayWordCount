@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+option java_package = "com.erjiguan.daywordcount";
+option java_outer_classname = "WordFreqProtos";
+
+message WordFreq {
+    required string word = 1;
+    required int32 count = 2;
+}
+
+message WordFreqList {
+    repeated WordFreq wordFreqs = 1;
+}
