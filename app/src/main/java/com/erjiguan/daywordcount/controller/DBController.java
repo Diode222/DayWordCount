@@ -87,29 +87,18 @@ public class DBController {
 
     // 输入是网络获取到的protobuf序列化数据，将proto反序列化解析得到词频数据后，存入WordFreqDB中，
     // 存之前需要删除所有本地词频数据
-    public void setWordFreqData(final byte[] data) {
+    public void setWordFreqData(final List<ArrayList<Object> > dataList) {
         // 每次都会直接更换本地数据库，而非在本地基础上更新
         deleteAllWordFreqData();
 
-        WordFreqProtos.WordFreqList wordFreqList = null;
-        try {
-            wordFreqList = WordFreqProtos.WordFreqList.parseFrom(data);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        if (wordFreqList == null) {
-            Log.d("protobuf error", "Deserialization failed");
-            return;
-        }
-
-        for (final WordFreqProtos.WordFreq wordFreq: wordFreqList.getWordFreqsList()) {
+        for (final ArrayList<Object> data: dataList) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     synchronized (wordFreqDB) {
                         wordFreqDB.wordFreqDao().insertWord(new WordFreqEntity() {{
-                            word = wordFreq.getWord();
-                            count = wordFreq.getCount();
+                            word = (String) data.get(0);
+                            count = (int) data.get(1);
                         }});
                     }
                 }
@@ -155,8 +144,6 @@ public class DBController {
             chatMessageTmpData.add(chatMessageList.toByteArray());
         }
 
-        // 删掉ChatMessageTmpDB中所有数据
-        deleteAllChatMessageTmpData();
         return chatMessageTmpData;
     }
 
