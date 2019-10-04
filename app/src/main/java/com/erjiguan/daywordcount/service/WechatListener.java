@@ -13,7 +13,7 @@ import jackmego.com.jieba_android.RequestCallback;
 
 public class WechatListener extends AccessibilityService {
     private String inputString = "";
-    private String chatPerson = "Unknown";
+    private String chatPerson = "unknown";
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -29,17 +29,13 @@ public class WechatListener extends AccessibilityService {
                 }
                 chatPerson = chatPageItems[1];
             } else if (eventType == AccessibilityEvent.TYPE_VIEW_CLICKED && event.getText().toString().equals("[发送]")) {
-                String insideInputString = inputString.substring(1, inputString.length() - 1).trim();
+                final String insideInputString = inputString.substring(1, inputString.length() - 1).trim();
                 if (insideInputString.length() > 0) {
-                    long sendTime = System.currentTimeMillis() / 1000;
-                    // TODO 将数据存储逻辑写到这里，删掉下面的本地分词逻辑。这里只存微信消息、聊天对象和时间
-
-
-
+                    final long sendTime = System.currentTimeMillis() / 1000;
                     RequestCallback<ArrayList<String> > callback = new RequestCallback<ArrayList<String>>() {
                         @Override
                         public void onSuccess(ArrayList<String> result) {
-                            DBControllerInstance.dbController.setWordFreqData1(result);
+                            DBControllerInstance.dbController.setChatMessageTmpData(insideInputString, sendTime, chatPerson);
                         }
 
                         @Override

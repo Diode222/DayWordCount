@@ -23,11 +23,8 @@ public interface ChatMessageTmpDao {
     @Delete
     void deleteMessage(ChatMessageTmpEntity msgEntity);
 
-    @Delete
-    void deleteAllMessage(List<ChatMessageTmpEntity> mesgEntities);
-
-    @Delete
-    void deleteAllMessage(ChatMessageTmpEntity... mesgEntities);
+    @Query("DELETE FROM ChatMessageTmpEntity")
+    void deleteAllMessage();
 
     @Query("select * from ChatMessageTmpEntity")
     List<ChatMessageTmpEntity> getChatMessageList();

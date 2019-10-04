@@ -58,58 +58,47 @@ public class DBController {
         return dataList;
     }
 
-    public void setWordFreqData1(final ArrayList<String> wordList) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (wordFreqDB) {  // 写数据必须将对应数据库加锁
-                    for (final String wordListened: wordList) {
-                        if (wordListened.length() <= 1) {
-                            continue;
-                        }
-                        final List<WordFreqEntity> wordEntity = wordFreqDB.wordFreqDao().getCountByWord(wordListened);
-                        if (wordEntity.size() <= 0) {
-                            WordFreqDBInstance.wordFreqDB.wordFreqDao().insertWord(new WordFreqEntity() {{
-                                this.word = wordListened;
-                                this.count = 1;
-                            }});
-                        } else {
-                            WordFreqDBInstance.wordFreqDB.wordFreqDao().updateWord(new WordFreqEntity() {{
-                                this.word = wordListened;
-                                this.count = wordEntity.get(0).count + 1;
-                            }});
-                        }
-                    }
-                }
-            }
-        }).start();
-    }
+//    public void setWordFreqData1(final ArrayList<String> wordList) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                synchronized (wordFreqDB) {  // 写数据必须将对应数据库加锁
+//                    for (final String wordListened: wordList) {
+//                        if (wordListened.length() <= 1) {
+//                            continue;
+//                        }
+//                        final List<WordFreqEntity> wordEntity = wordFreqDB.wordFreqDao().getCountByWord(wordListened);
+//                        if (wordEntity.size() <= 0) {
+//                            WordFreqDBInstance.wordFreqDB.wordFreqDao().insertWord(new WordFreqEntity() {{
+//                                this.word = wordListened;
+//                                this.count = 1;
+//                            }});
+//                        } else {
+//                            WordFreqDBInstance.wordFreqDB.wordFreqDao().updateWord(new WordFreqEntity() {{
+//                                this.word = wordListened;
+//                                this.count = wordEntity.get(0).count + 1;
+//                            }});
+//                        }
+//                    }
+//                }
+//            }
+//        }).start();
+//    }
 
     // 输入是网络获取到的protobuf序列化数据，将proto反序列化解析得到词频数据后，存入WordFreqDB中，
     // 存之前需要删除所有本地词频数据
-    public void setWordFreqData(final byte[] data) {
+    public void setWordFreqData(final List<ArrayList<Object> > dataList) {
         // 每次都会直接更换本地数据库，而非在本地基础上更新
         deleteAllWordFreqData();
 
-        WordFreqProtos.WordFreqList wordFreqList = null;
-        try {
-            wordFreqList = WordFreqProtos.WordFreqList.parseFrom(data);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        if (wordFreqList == null) {
-            Log.d("protobuf error", "Deserialization failed");
-            return;
-        }
-
-        for (final WordFreqProtos.WordFreq wordFreq: wordFreqList.getWordFreqsList()) {
+        for (final ArrayList<Object> data: dataList) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     synchronized (wordFreqDB) {
                         wordFreqDB.wordFreqDao().insertWord(new WordFreqEntity() {{
-                            word = wordFreq.getWord();
-                            count = wordFreq.getCount();
+                            word = (String) data.get(0);
+                            count = (int) data.get(1);
                         }});
                     }
                 }
@@ -123,7 +112,7 @@ public class DBController {
             @Override
             public void run() {
                 synchronized (wordFreqDB) {
-                    wordFreqDB.wordFreqDao().deleteWord();
+                    wordFreqDB.wordFreqDao().deleteAllWord();
                 }
             }
         }).start();
@@ -154,9 +143,7 @@ public class DBController {
             ChatMessageProtos.ChatMessageList chatMessageList = chatMessageListBuilder.build();
             chatMessageTmpData.add(chatMessageList.toByteArray());
         }
-
-        // 删掉ChatMessageTmpDB中所有数据
-        deleteAllChatMessageTmpData();
+      
         return chatMessageTmpData;
     }
 
