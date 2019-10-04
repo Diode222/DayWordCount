@@ -28,7 +28,7 @@ public class NetInfo {
         return false;
     }
 
-    public static boolean isNetworkAvailable( Context context) {
+    private static boolean isNetworkAvailable( Context context) {
         ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity == null) {
             return false;

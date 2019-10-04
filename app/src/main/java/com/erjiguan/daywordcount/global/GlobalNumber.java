@@ -15,9 +15,9 @@ public class GlobalNumber {
     final public static int DATA_AMOUNT_MODERATE = 30;
     final public static int DATA_AMOUNT_SPARSE = 20;
 
-    // 本地临时存储到达多少条微信输入消息才会在刷新时请求新数据
+    // TODO 本地临时存储到达多少条微信输入消息才会在刷新时请求新数据
     final public static int MAX_MESSAGE_STORAGE_COUNT_TO_REQUEST_NEW = 10;
 
     // 当本地数据库存有很多聊天数据时，拆分为多个包，每个包最多包含20条数据
-    final public static int MAX_SIZE_OF_MESSAGE_IN_PACKAGE = 20;
+    final public static int MAX_SIZE_OF_MESSAGE_IN_PACKAGE = 40;
 }

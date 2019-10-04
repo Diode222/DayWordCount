@@ -1,8 +1,12 @@
 package com.erjiguan.daywordcount.view.fragment;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +18,35 @@ import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.erjiguan.daywordcount.R;
+import com.erjiguan.daywordcount.WordFreqProtos;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
 import com.erjiguan.daywordcount.controller.DBController;
-import com.erjiguan.daywordcount.data.DataGetter;
 import com.erjiguan.daywordcount.global.DBControllerInstance;
 import com.erjiguan.daywordcount.global.GlobalNumber;
-import com.erjiguan.daywordcount.network.Api;
+import com.erjiguan.daywordcount.global.RequestAddressInfo;
 import com.erjiguan.daywordcount.network.NetInfo;
+import com.erjiguan.daywordcount.utils.SubArrayList;
 import com.erjiguan.daywordcount.view.view_manager.BarChartManager;
 import com.erjiguan.wordcloudviewlib.WordCloudView;
 import com.github.mikephil.charting.charts.BarChart;
 import com.moxun.tagcloudlib.view.TagCloudView;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class WordCloudFragment extends Fragment {
 
@@ -57,13 +76,17 @@ public class WordCloudFragment extends Fragment {
 
     private static DBController dbController = DBControllerInstance.dbController;
 
-    ArrayList<ArrayList<Object> > dataList;
+    ArrayList<ArrayList<Object> > dataList = new ArrayList<ArrayList<Object> >();
+
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
-
         final View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
+        initSwipeFresh(view);
+        updateData(getActivity(), DBController.INTENSIVE, "noun", view);
 
         // 3D词云图
         createTagCloudView(view, dataList);
@@ -115,9 +138,6 @@ public class WordCloudFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
-        // 下拉刷新初始化
-        initSwipeFresh(view);
-
         dataAmountSpinner = (Spinner) view.findViewById(R.id.data_amount_spinner);
         dataAmountList = new ArrayList<String>() {{
             add("密集");  //暂定
@@ -137,17 +157,14 @@ public class WordCloudFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(true);
                 switch (i) {
                     case 0:  // 0表示密集
-//                        dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
                         dataList = dbController.getWordFreqData(DBController.INTENSIVE);
                         CURRENT_DATA_AMOUNT = INTENSIVE_DATA;
                         break;
                     case 1:  // 1表示适量
-//                        dataList = DataGetter.get(getActivity(), DBController.MODERATE, "noun", dbController);
                         dataList = dbController.getWordFreqData(DBController.MODERATE);
                         CURRENT_DATA_AMOUNT = MODERATE_DATA;
                         break;
                     case 2:  // 2表示稀疏
-//                        dataList = DataGetter.get(getActivity(), DBController.SPARSE, "noun", dbController);
                         dataList = dbController.getWordFreqData(DBController.SPARSE);
                         CURRENT_DATA_AMOUNT = SPARSE_DATA;
                         break;
@@ -229,30 +246,143 @@ public class WordCloudFragment extends Fragment {
     }
 
     public void initSwipeFresh(final View view) {
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.word_cloud_fragment_swipe_fresh);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.word_cloud_fragment_swipe_fresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 switch (CURRENT_DATA_AMOUNT) {
                     case INTENSIVE_DATA:
-                        dataList = dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
+                        updateData(getActivity(), DBController.INTENSIVE, "noun", view);
                         break;
                     case MODERATE_DATA:
-                        dataList = dataList = DataGetter.get(getActivity(), DBController.MODERATE, "noun", dbController);
+                        updateData(getActivity(), DBController.MODERATE, "noun", view);
                         break;
                     case SPARSE_DATA:
-                        dataList = dataList = DataGetter.get(getActivity(), DBController.SPARSE, "noun", dbController);
+                        updateData(getActivity(), DBController.SPARSE, "noun", view);
                         break;
                     default:
-                        dataList = dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
+                        updateData(getActivity(), DBController.INTENSIVE, "noun", view);
                 }
-
-                createTagCloudView(view, dataList);
-                createWordCloudView(view, dataList);
-                createBarChartView(view, dataList);
-
-                swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    private void updateData(Context context, int dataAmount, String pos, final View view) {
+        if (NetInfo.IsNetworkAvailable(context)) {
+            transmissionMessageDataAndRequest(dataAmount, pos, view);
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+            dataList = dbController.getWordFreqData(dataAmount);
+        }
+    }
+
+    private void transmissionMessageDataAndRequest(final int dataAmount, String pos, final View view) {
+        final ArrayList<ArrayList<Object> > responseDataList = new ArrayList<ArrayList<Object> >();
+
+        ArrayList<byte[]> chatMessageDataList = DBControllerInstance.dbController.getAllChatMessageTmpData();
+
+        HttpUrl url = new HttpUrl.Builder().scheme("http").
+                host(RequestAddressInfo.IP).
+                port(RequestAddressInfo.PORT).
+                addPathSegment("get").
+                addQueryParameter("part_of_speech", ""+ pos).build();
+        OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
+
+        Request request = (new Request.Builder()).url(url).get().build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("api_error", e.toString());
+                e.printStackTrace();
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try {
+                    WordFreqProtos.WordFreqList wordFreqList = WordFreqProtos.WordFreqList.parseFrom(response.body().bytes());
+                    for (final WordFreqProtos.WordFreq wordFreq: wordFreqList.getWordFreqsList()) {
+                        synchronized (this) {
+                            responseDataList.add(new ArrayList<Object>() {{
+                                add(wordFreq.getWord());
+                                add(wordFreq.getCount());
+                            }});
+                        }
+                    }
+                    DBControllerInstance.dbController.setWordFreqData(responseDataList);
+
+                    switch (dataAmount) {
+                        case DBController.INTENSIVE:
+                            dataList = SubArrayList.subList(responseDataList, 0, GlobalNumber.DATA_AMOUNT_INTENSIVE);
+                            break;
+                        case DBController.MODERATE:
+                            dataList = SubArrayList.subList(responseDataList, 0, GlobalNumber.DATA_AMOUNT_MODERATE);
+                            break;
+                        case DBController.SPARSE:
+                            dataList = SubArrayList.subList(responseDataList, 0, GlobalNumber.DATA_AMOUNT_SPARSE);
+                            break;
+                        default:
+                            dataList = SubArrayList.subList(responseDataList, 0, GlobalNumber.DATA_AMOUNT_INTENSIVE);
+                    }
+
+                    if (dataList.size() > 0) {
+                        DBControllerInstance.dbController.deleteAllChatMessageTmpData();
+                    } else {
+                        dataList = DBControllerInstance.dbController.getWordFreqData(dataAmount);
+                    }
+
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 3D词云图
+                            createTagCloudView(view, dataList);
+
+                            // 2D词云图
+                            createWordCloudView(view, dataList);
+
+                            // 柱状图
+                            createBarChartView(view, dataList);
+                        }
+                    });
+                } catch (IOException e) {
+                    Log.d("api error", "response parse failed");
+                    e.printStackTrace();
+                } finally {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
+
+        for (byte[] chatMessageData: chatMessageDataList) {
+            RequestBody requestBody = FormBody.create(chatMessageData);
+            Request.Builder requestBuilder = new Request.Builder();
+            request = requestBuilder.url(url).post(requestBody).build();
+            call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Log.d("api_error", e.toString());
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.code() == 200) {
+                        DBControllerInstance.dbController.deleteAllChatMessageTmpData();
+                    }
+                }
+            });
+        }
     }
 }
