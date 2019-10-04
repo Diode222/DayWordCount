@@ -143,7 +143,7 @@ public class DBController {
             ChatMessageProtos.ChatMessageList chatMessageList = chatMessageListBuilder.build();
             chatMessageTmpData.add(chatMessageList.toByteArray());
         }
-
+      
         return chatMessageTmpData;
     }
 
