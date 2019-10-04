@@ -58,6 +58,7 @@ dependencies {
     implementation ('com.squareup.retrofit2:converter-protobuf:2.2.0') {
         exclude group: 'com.google.protobuf', module: 'protobuf-java'
     }
+    implementation 'com.squareup.okhttp3:okhttp:4.2.1'
 }
 
 protobuf {

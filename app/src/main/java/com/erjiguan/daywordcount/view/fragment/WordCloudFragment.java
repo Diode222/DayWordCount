@@ -16,8 +16,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.erjiguan.daywordcount.R;
 import com.erjiguan.daywordcount.adapter.TextTagsAdapter;
 import com.erjiguan.daywordcount.controller.DBController;
+import com.erjiguan.daywordcount.data.DataGetter;
 import com.erjiguan.daywordcount.global.DBControllerInstance;
 import com.erjiguan.daywordcount.global.GlobalNumber;
+import com.erjiguan.daywordcount.network.Api;
+import com.erjiguan.daywordcount.network.NetInfo;
 import com.erjiguan.daywordcount.view.view_manager.BarChartManager;
 import com.erjiguan.wordcloudviewlib.WordCloudView;
 import com.github.mikephil.charting.charts.BarChart;
@@ -58,7 +61,7 @@ public class WordCloudFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        dataList = dbController.getWordFreqData(DBController.INTENSIVE);
+        dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
 
         final View view = inflater.inflate(R.layout.wordcloud_fragment, container, false);
 
@@ -134,14 +137,17 @@ public class WordCloudFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(true);
                 switch (i) {
                     case 0:  // 0表示密集
+//                        dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
                         dataList = dbController.getWordFreqData(DBController.INTENSIVE);
                         CURRENT_DATA_AMOUNT = INTENSIVE_DATA;
                         break;
                     case 1:  // 1表示适量
+//                        dataList = DataGetter.get(getActivity(), DBController.MODERATE, "noun", dbController);
                         dataList = dbController.getWordFreqData(DBController.MODERATE);
                         CURRENT_DATA_AMOUNT = MODERATE_DATA;
                         break;
                     case 2:  // 2表示稀疏
+//                        dataList = DataGetter.get(getActivity(), DBController.SPARSE, "noun", dbController);
                         dataList = dbController.getWordFreqData(DBController.SPARSE);
                         CURRENT_DATA_AMOUNT = SPARSE_DATA;
                         break;
@@ -229,16 +235,16 @@ public class WordCloudFragment extends Fragment {
             public void onRefresh() {
                 switch (CURRENT_DATA_AMOUNT) {
                     case INTENSIVE_DATA:
-                        dataList = dbController.getWordFreqData(DBController.INTENSIVE);
+                        dataList = dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
                         break;
                     case MODERATE_DATA:
-                        dataList = dbController.getWordFreqData(DBController.MODERATE);
+                        dataList = dataList = DataGetter.get(getActivity(), DBController.MODERATE, "noun", dbController);
                         break;
                     case SPARSE_DATA:
-                        dataList = dbController.getWordFreqData(DBController.SPARSE);
+                        dataList = dataList = DataGetter.get(getActivity(), DBController.SPARSE, "noun", dbController);
                         break;
                     default:
-                        dataList = dbController.getWordFreqData(DBController.INTENSIVE);
+                        dataList = dataList = DataGetter.get(getActivity(), DBController.INTENSIVE, "noun", dbController);
                 }
 
                 createTagCloudView(view, dataList);
