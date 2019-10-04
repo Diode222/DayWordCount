@@ -89,13 +89,13 @@ public class DBController {
     // 存之前需要删除所有本地词频数据
     public void setWordFreqData(final List<ArrayList<Object> > dataList) {
         // 每次都会直接更换本地数据库，而非在本地基础上更新
-        deleteAllWordFreqData();
-
+        wordFreqDB.wordFreqDao().deleteAllWord();
         for (final ArrayList<Object> data: dataList) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     synchronized (wordFreqDB) {
+                        Log.d("api_error", "word: " + (String) data.get(0) + " count: " + data.get(1));
                         wordFreqDB.wordFreqDao().insertWord(new WordFreqEntity() {{
                             word = (String) data.get(0);
                             count = (int) data.get(1);
@@ -105,17 +105,6 @@ public class DBController {
             }).start();
         }
 
-    }
-
-    private void deleteAllWordFreqData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (wordFreqDB) {
-                    wordFreqDB.wordFreqDao().deleteAllWord();
-                }
-            }
-        }).start();
     }
 
     // 获取本地所有的聊天数据，根据大小打包成protobuf序列化二进制数据数组，返回给调用方用于发送给Odin，调用方会循环遍历发送
@@ -163,14 +152,7 @@ public class DBController {
     }
 
     public void deleteAllChatMessageTmpData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (chatMessageTmpDB) {
-                    chatMessageTmpDB.chatMessageTmpDao().deleteAllMessage();
-                }
-            }
-        }).start();
+        chatMessageTmpDB.chatMessageTmpDao().deleteAllMessage();
     }
 
     // 获取密集数据
