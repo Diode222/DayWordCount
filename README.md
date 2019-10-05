@@ -10,6 +10,6 @@ APP           https://github.com/Diode222/DayWordCount
 
 数据服务层      https://github.com/Diode222/Frigg
 
-算法服务模块    (待实现)
+算法服务模块    https://github.com/Diode222/Mimiron
 
 服务发现模块    https://github.com/Diode222/etcd_service_discovery
